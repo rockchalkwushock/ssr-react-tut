@@ -11,7 +11,6 @@ class UsersList extends Component {
     return this.props.users.map(user => <li key={user.id}>{user.name}</li>)
   }
   render() {
-    console.log(this.props)
     return (
       <div>
         Here is a big list of users:
@@ -21,6 +20,13 @@ class UsersList extends Component {
   }
 }
 
-export default connect(state => ({ users: state.users }), { fetchUsers })(
-  UsersList
-)
+function loadData(store) {
+  return store.dispatch(fetchUsers())
+}
+
+export default {
+  component: connect(state => ({ users: state.users }), { fetchUsers })(
+    UsersList
+  ),
+  loadData
+}
