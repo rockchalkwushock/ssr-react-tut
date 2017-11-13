@@ -1,6 +1,7 @@
 // This is client-side only code.
 import 'babel-polyfill'
 import React from 'react'
+import axios from 'axios'
 import { hydrate } from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 import { createStore, applyMiddleware } from 'redux'
@@ -12,10 +13,14 @@ import serialize from 'serialize-javascript'
 import Routes from './Routes'
 import reducers from './reducers'
 
+const axiosInstance = axios.create({
+  baseURL: '/api'
+})
+
 const store = createStore(
   reducers,
   window.INITIAL_STATE,
-  applyMiddleware(thunk)
+  applyMiddleware(thunk.withExtraArgument(axiosInstance))
 )
 
 const App = () => (
