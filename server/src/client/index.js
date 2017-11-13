@@ -1,7 +1,14 @@
 // This is client-side only code.
 import React from 'react'
 import { hydrate } from 'react-dom'
+import { BrowserRouter } from 'react-router-dom'
 
-import { Home } from './components'
+import Routes from './Routes'
 
-hydrate(<Home />, document.querySelector('#root'))
+const App = () => (
+  <BrowserRouter>
+    <Routes />
+  </BrowserRouter>
+)
+
+hydrate(<App />, document.querySelector('#root'))
