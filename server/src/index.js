@@ -20,9 +20,17 @@ app.use(
 app.use(express.static('public'))
 app.get('*', (req, res) => {
   const store = reduxStore(req)
-  const promises = matchRoutes(Routes, req.path).map(({ route }) => {
-    return route.loadData ? route.loadData(store) : null
-  })
+  const promises = matchRoutes(Routes, req.path)
+    .map(({ route }) => {
+      return route.loadData ? route.loadData(store) : null
+    })
+    .map(promise => {
+      if (promise) {
+        return new Promise((resolve, reject) => {
+          promise.then(resolve).catch(resolve)
+        })
+      }
+    })
   Promise.all(promises).then(() => {
     const context = {}
     const content = renderer(req, store, context)

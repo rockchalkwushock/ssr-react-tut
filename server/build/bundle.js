@@ -87,7 +87,8 @@ var FETCH_USERS = exports.FETCH_USERS = 'FETCH_USERS';
 var fetchUsers = exports.fetchUsers = function fetchUsers() {
   return function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch, getState, api) {
-      var res;
+      var _ref2, data;
+
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -96,14 +97,15 @@ var fetchUsers = exports.fetchUsers = function fetchUsers() {
               return api.get('/users');
 
             case 2:
-              res = _context.sent;
+              _ref2 = _context.sent;
+              data = _ref2.data;
 
               dispatch({
                 type: FETCH_USERS,
-                payload: res
+                payload: data
               });
 
-            case 4:
+            case 5:
             case 'end':
               return _context.stop();
           }
@@ -121,8 +123,9 @@ var FETCH_CURRENT_USER = exports.FETCH_CURRENT_USER = 'FETCH_CURRENT_USER';
 
 var fetchCurrentUser = exports.fetchCurrentUser = function fetchCurrentUser() {
   return function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(dispatch, getState, api) {
-      var res;
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(dispatch, getState, api) {
+      var _ref4, data;
+
       return regeneratorRuntime.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
@@ -131,15 +134,16 @@ var fetchCurrentUser = exports.fetchCurrentUser = function fetchCurrentUser() {
               return api.get('/current_user');
 
             case 2:
-              res = _context2.sent;
+              _ref4 = _context2.sent;
+              data = _ref4.data;
 
 
               dispatch({
                 type: FETCH_CURRENT_USER,
-                payload: res
+                payload: data
               });
 
-            case 4:
+            case 5:
             case 'end':
               return _context2.stop();
           }
@@ -148,7 +152,45 @@ var fetchCurrentUser = exports.fetchCurrentUser = function fetchCurrentUser() {
     }));
 
     return function (_x4, _x5, _x6) {
-      return _ref2.apply(this, arguments);
+      return _ref3.apply(this, arguments);
+    };
+  }();
+};
+
+var FETCH_ADMINS = exports.FETCH_ADMINS = 'FETCH_ADMINS';
+
+var fetchAdmins = exports.fetchAdmins = function fetchAdmins() {
+  return function () {
+    var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(dispatch, getState, api) {
+      var _ref6, data;
+
+      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.next = 2;
+              return api.get('/admins');
+
+            case 2:
+              _ref6 = _context3.sent;
+              data = _ref6.data;
+
+
+              dispatch({
+                type: FETCH_ADMINS,
+                payload: data
+              });
+
+            case 5:
+            case 'end':
+              return _context3.stop();
+          }
+        }
+      }, _callee3, undefined);
+    }));
+
+    return function (_x7, _x8, _x9) {
+      return _ref5.apply(this, arguments);
     };
   }();
 };
@@ -157,13 +199,13 @@ var fetchCurrentUser = exports.fetchCurrentUser = function fetchCurrentUser() {
 /* 2 */
 /***/ (function(module, exports) {
 
-module.exports = require("react-router-config");
+module.exports = require("react-redux");
 
 /***/ }),
 /* 3 */
 /***/ (function(module, exports) {
 
-module.exports = require("react-redux");
+module.exports = require("react-router-config");
 
 /***/ }),
 /* 4 */
@@ -190,10 +232,15 @@ var _pages = __webpack_require__(14);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// NOTE: You cannot list any routes after `NotFound` the array is indexed in order
+// routes after `NotFound` will be routed to `NotFound` even though the views and
+// and route exist.
 exports.default = [_extends({}, _App2.default, {
   routes: [_extends({}, _pages.Home, {
     path: '/',
     exact: true
+  }), _extends({}, _pages.AdminsList, {
+    path: '/admins'
   }), _extends({}, _pages.UsersList, {
     path: '/users'
   }), _extends({}, _pages.NotFound)]
@@ -228,13 +275,13 @@ var _expressHttpProxy = __webpack_require__(10);
 
 var _expressHttpProxy2 = _interopRequireDefault(_expressHttpProxy);
 
-var _reactRouterConfig = __webpack_require__(2);
+var _reactRouterConfig = __webpack_require__(3);
 
 var _Routes = __webpack_require__(4);
 
 var _Routes2 = _interopRequireDefault(_Routes);
 
-var _helpers = __webpack_require__(18);
+var _helpers = __webpack_require__(19);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -253,6 +300,12 @@ app.get('*', function (req, res) {
     var route = _ref.route;
 
     return route.loadData ? route.loadData(store) : null;
+  }).map(function (promise) {
+    if (promise) {
+      return new Promise(function (resolve, reject) {
+        promise.then(resolve).catch(resolve);
+      });
+    }
   });
   Promise.all(promises).then(function () {
     var context = {};
@@ -306,7 +359,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterConfig = __webpack_require__(2);
+var _reactRouterConfig = __webpack_require__(3);
 
 var _components = __webpack_require__(12);
 
@@ -344,6 +397,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Header = undefined;
 
+var _hocs = __webpack_require__(29);
+
+Object.keys(_hocs).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _hocs[key];
+    }
+  });
+});
+
 var _Header = __webpack_require__(13);
 
 var _Header2 = _interopRequireDefault(_Header);
@@ -369,7 +434,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouterDom = __webpack_require__(5);
 
-var _reactRedux = __webpack_require__(3);
+var _reactRedux = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -403,7 +468,7 @@ var Header = function Header(_ref) {
           null,
           _react2.default.createElement(
             _reactRouterDom.Link,
-            { to: '/admin' },
+            { to: '/admins' },
             'Admins'
           )
         ),
@@ -439,22 +504,27 @@ exports.default = (0, _reactRedux.connect)(function (state) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.UsersList = exports.NotFound = exports.loadData = exports.Home = undefined;
+exports.UsersList = exports.NotFound = exports.loadData = exports.Home = exports.AdminsList = undefined;
 
-var _Home = __webpack_require__(15);
+var _AdminsList = __webpack_require__(15);
+
+var _AdminsList2 = _interopRequireDefault(_AdminsList);
+
+var _Home = __webpack_require__(16);
 
 var _Home2 = _interopRequireDefault(_Home);
 
-var _NotFound = __webpack_require__(16);
+var _NotFound = __webpack_require__(17);
 
 var _NotFound2 = _interopRequireDefault(_NotFound);
 
-var _UsersList = __webpack_require__(17);
+var _UsersList = __webpack_require__(18);
 
 var _UsersList2 = _interopRequireDefault(_UsersList);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+exports.AdminsList = _AdminsList2.default;
 exports.Home = _Home2.default;
 exports.loadData = _UsersList.loadData;
 exports.NotFound = _NotFound2.default;
@@ -462,6 +532,91 @@ exports.UsersList = _UsersList2.default;
 
 /***/ }),
 /* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(2);
+
+var _actions = __webpack_require__(1);
+
+var _components = __webpack_require__(12);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var AdminsList = function (_Component) {
+  _inherits(AdminsList, _Component);
+
+  function AdminsList() {
+    _classCallCheck(this, AdminsList);
+
+    return _possibleConstructorReturn(this, (AdminsList.__proto__ || Object.getPrototypeOf(AdminsList)).apply(this, arguments));
+  }
+
+  _createClass(AdminsList, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.props.fetchAdmins();
+    }
+  }, {
+    key: 'renderAdmins',
+    value: function renderAdmins() {
+      return this.props.admins.map(function (admin) {
+        return _react2.default.createElement(
+          'li',
+          { key: admin.id },
+          admin.name
+        );
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        null,
+        'Here is a big list of adimns:',
+        _react2.default.createElement(
+          'ul',
+          null,
+          this.renderAdmins()
+        )
+      );
+    }
+  }]);
+
+  return AdminsList;
+}(_react.Component);
+
+exports.default = {
+  component: (0, _reactRedux.connect)(function (state) {
+    return { admins: state.admins };
+  }, { fetchAdmins: _actions.fetchAdmins })((0, _components.requireAuth)(AdminsList)),
+  loadData: function loadData(_ref) {
+    var dispatch = _ref.dispatch;
+    return dispatch((0, _actions.fetchAdmins)());
+  }
+};
+
+/***/ }),
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -499,7 +654,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -533,7 +688,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -549,7 +704,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(3);
+var _reactRedux = __webpack_require__(2);
 
 var _actions = __webpack_require__(1);
 
@@ -617,7 +772,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -628,11 +783,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.renderer = exports.reduxStore = undefined;
 
-var _reduxStore = __webpack_require__(19);
+var _reduxStore = __webpack_require__(20);
 
 var _reduxStore2 = _interopRequireDefault(_reduxStore);
 
-var _renderer = __webpack_require__(25);
+var _renderer = __webpack_require__(27);
 
 var _renderer2 = _interopRequireDefault(_renderer);
 
@@ -642,7 +797,7 @@ exports.reduxStore = _reduxStore2.default;
 exports.renderer = _renderer2.default;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -654,15 +809,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _redux = __webpack_require__(6);
 
-var _reduxThunk = __webpack_require__(20);
+var _reduxThunk = __webpack_require__(21);
 
 var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-var _axios = __webpack_require__(21);
+var _axios = __webpack_require__(22);
 
 var _axios2 = _interopRequireDefault(_axios);
 
-var _reducers = __webpack_require__(22);
+var _reducers = __webpack_require__(23);
 
 var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -679,44 +834,16 @@ exports.default = function (req) {
 };
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = require("redux-thunk");
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = require("axios");
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _redux = __webpack_require__(6);
-
-var _auth = __webpack_require__(23);
-
-var _auth2 = _interopRequireDefault(_auth);
-
-var _users = __webpack_require__(24);
-
-var _users2 = _interopRequireDefault(_users);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = (0, _redux.combineReducers)({
-  auth: _auth2.default,
-  users: _users2.default
-});
 
 /***/ }),
 /* 23 */
@@ -729,21 +856,27 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _actions = __webpack_require__(1);
+var _redux = __webpack_require__(6);
 
-exports.default = function () {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-  var _ref = arguments[1];
-  var payload = _ref.payload,
-      type = _ref.type;
+var _admins = __webpack_require__(24);
 
-  switch (type) {
-    case _actions.FETCH_CURRENT_USER:
-      return payload.data || false;
-    default:
-      return state;
-  }
-};
+var _admins2 = _interopRequireDefault(_admins);
+
+var _auth = __webpack_require__(25);
+
+var _auth2 = _interopRequireDefault(_auth);
+
+var _users = __webpack_require__(26);
+
+var _users2 = _interopRequireDefault(_users);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = (0, _redux.combineReducers)({
+  admins: _admins2.default,
+  auth: _auth2.default,
+  users: _users2.default
+});
 
 /***/ }),
 /* 24 */
@@ -765,8 +898,8 @@ exports.default = function () {
       type = _ref.type;
 
   switch (type) {
-    case _actions.FETCH_USERS:
-      return payload.data;
+    case _actions.FETCH_ADMINS:
+      return payload;
     default:
       return state;
   }
@@ -783,17 +916,71 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _actions = __webpack_require__(1);
+
+exports.default = function () {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+  var _ref = arguments[1];
+  var payload = _ref.payload,
+      type = _ref.type;
+
+  switch (type) {
+    case _actions.FETCH_CURRENT_USER:
+      return payload || false;
+    default:
+      return state;
+  }
+};
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _actions = __webpack_require__(1);
+
+exports.default = function () {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var _ref = arguments[1];
+  var payload = _ref.payload,
+      type = _ref.type;
+
+  switch (type) {
+    case _actions.FETCH_USERS:
+      return payload;
+    default:
+      return state;
+  }
+};
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _server = __webpack_require__(26);
+var _server = __webpack_require__(28);
 
 var _reactRouterDom = __webpack_require__(5);
 
-var _reactRedux = __webpack_require__(3);
+var _reactRedux = __webpack_require__(2);
 
-var _reactRouterConfig = __webpack_require__(2);
+var _reactRouterConfig = __webpack_require__(3);
 
 var _Routes = __webpack_require__(4);
 
@@ -809,7 +996,7 @@ exports.default = function (_ref, store, context) {
     { store: store },
     _react2.default.createElement(
       _reactRouterDom.StaticRouter,
-      { context: context, location: path },
+      { location: path, context: context },
       _react2.default.createElement(
         'div',
         null,
@@ -821,10 +1008,95 @@ exports.default = function (_ref, store, context) {
 };
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-dom/server");
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.requireAuth = undefined;
+
+var _requireAuth = __webpack_require__(30);
+
+var _requireAuth2 = _interopRequireDefault(_requireAuth);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.requireAuth = _requireAuth2.default;
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(2);
+
+var _reactRouterDom = __webpack_require__(5);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+exports.default = function (ChildComponent) {
+  var RequireAuth = function (_Component) {
+    _inherits(RequireAuth, _Component);
+
+    function RequireAuth() {
+      _classCallCheck(this, RequireAuth);
+
+      return _possibleConstructorReturn(this, (RequireAuth.__proto__ || Object.getPrototypeOf(RequireAuth)).apply(this, arguments));
+    }
+
+    _createClass(RequireAuth, [{
+      key: 'render',
+      value: function render() {
+        switch (this.props.auth) {
+          case false:
+            return _react2.default.createElement(_reactRouterDom.Redirect, { to: '/' });
+          case null:
+            return _react2.default.createElement(
+              'div',
+              null,
+              'Loading...'
+            );
+          default:
+            return _react2.default.createElement(ChildComponent, this.props);
+        }
+      }
+    }]);
+
+    return RequireAuth;
+  }(_react.Component);
+
+  return (0, _reactRedux.connect)(function (state) {
+    return { auth: state.auth };
+  })(RequireAuth);
+};
 
 /***/ })
 /******/ ]);
